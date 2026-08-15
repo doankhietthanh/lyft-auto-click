@@ -16,17 +16,17 @@ Script chạy liên tục cho đến khi phát hiện được một chuyến:
    - Nhấn `new_available_rides`.
    - Thử tìm và nhấn `btn_reserve` trong tối đa 1.5 giây.
    - Dừng vòng lặp.
-4. Nếu chưa tìm thấy, tiếp tục polling mỗi 50 ms trong 200 ms. Mỗi lần
-   polling cũng detect `search_this_area` và click nếu nút vừa xuất hiện.
+4. Nếu chưa tìm thấy, thực hiện 4 lần polling với khoảng nghỉ 50 ms. Mỗi lần
+   polling cũng kiểm tra `search_this_area` và click nếu nút vừa xuất hiện.
 5. Vuốt sang trái và lặp lại.
 
 Trình tự vuốt và thời gian chờ của một chu kỳ là:
 
 ```text
 Vuốt phải
-  -> polling chuyến mới + search_this_area trong 200 ms
+  -> polling chuyến mới + search_this_area (4 lần, nghỉ 50 ms)
 Vuốt trái
-  -> polling chuyến mới + search_this_area trong 200 ms
+  -> polling chuyến mới + search_this_area (4 lần, nghỉ 50 ms)
   -> lặp lại
 ```
 
@@ -65,8 +65,8 @@ searchAreaClickParam = timeout 100 ms, match score 0.85
 Script dùng tọa độ cố định trên màn hình:
 
 ```text
-Vuốt phải: (500, 1200) -> (750, 1200) trong 60 ms
-Vuốt trái: (750, 1200) -> (500, 1200) trong 60 ms
+Vuốt phải: (500, 1200) -> (750, 1200) trong 80 ms
+Vuốt trái: (750, 1200) -> (500, 1200) trong 80 ms
 ```
 
 Các tọa độ này phụ thuộc kích thước và tỉ lệ màn hình. Nếu thiết bị khác độ
