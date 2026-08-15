@@ -4,7 +4,7 @@ var findFastParam = FParam.timeout(100).mScore(0.85)
 var reserveParam = FParam.timeout(1500).mScore(0.85)
 var searchAreaClickParam = FParam.timeout(250).mScore(0.85)
 var swipeSettleDelay = 150
-var apiResultDelay = 500
+var apiResultDelay = 1000
 var pollInterval = 75
 var searchAreaAttempts = 6
 
@@ -36,8 +36,12 @@ fun reserveAvailableRide() {
     if (!popupRegion.click("new_available_rides", findFastParam))
         return false
 
+    wait(300)
+
     if (!popupRegion.click("btn_reserve", reserveParam))
         return false
+
+    wait(300)
 
     if (!popupRegion.click("btn_reserve_confirm", reserveParam))
         return false
