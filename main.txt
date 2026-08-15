@@ -41,6 +41,7 @@ fun checkNewAvaliableRides() {
     popupRegion.click("new_available_rides", findFastParam)
 
     if (popupRegion.click("btn_reserve", reserveParam)) {
+        return true
         popupRegion.click("btn_reserve_confirm", reserveParam)
     }
     
