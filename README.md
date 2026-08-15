@@ -1,0 +1,1 @@
+# lyft-auto-click
