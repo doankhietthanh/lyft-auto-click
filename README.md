@@ -17,19 +17,19 @@ Script chạy liên tục cho đến khi phát hiện được một chuyến:
    - Thử tìm và nhấn `btn_reserve` trong tối đa 1.5 giây.
    - Dừng vòng lặp.
 4. Ngay sau mỗi lần vuốt, ưu tiên detect và click `search_this_area`; nếu UI
-   render trễ, thử lại tối đa 4 lần với khoảng nghỉ 40 ms.
-5. Sau đó chờ `new_available_rides` tối đa 6 lần với khoảng nghỉ 50 ms.
+   render trễ, thử lại tối đa 6 lần với khoảng nghỉ 50 ms.
+5. Sau đó chờ `new_available_rides` tối đa 8 lần với khoảng nghỉ 50 ms.
 6. Nếu chưa tìm thấy chuyến, vuốt sang hướng còn lại và lặp lại.
 
 Trình tự vuốt và thời gian chờ của một chu kỳ là:
 
 ```text
 Vuốt phải
-  -> find/click search_this_area tối đa 4 lần
-  -> chờ new_available_rides tối đa 6 lần
+  -> find/click search_this_area tối đa 6 lần
+  -> chờ new_available_rides tối đa 8 lần
 Vuốt trái
-  -> find/click search_this_area tối đa 4 lần
-  -> chờ new_available_rides tối đa 6 lần
+  -> find/click search_this_area tối đa 6 lần
+  -> chờ new_available_rides tối đa 8 lần
   -> lặp lại
 ```
 
@@ -49,17 +49,17 @@ công cụ tự động click:
 ## Tham số nhận diện
 
 ```text
-findFastParam = timeout 50 ms, match score 0.85
+findFastParam = timeout 100 ms, match score 0.85
 reserveParam  = timeout 1500 ms, match score 0.85
-searchAreaFindParam  = timeout 50 ms, match score 0.85
-searchAreaClickParam = timeout 300 ms, match score 0.85
+searchAreaFindParam  = timeout 150 ms, match score 0.85
+searchAreaClickParam = timeout 500 ms, match score 0.85
 ```
 
-- `new_available_rides` được tìm nhanh với timeout 50 ms.
+- `new_available_rides` được tìm với timeout 100 ms.
 - `btn_reserve` có thời gian tìm dài hơn vì màn hình chi tiết cần thời gian
   hiển thị.
-- `search_this_area` chỉ được click một lần cho mỗi lần nút xuất hiện; script
-  chờ nút biến mất trước khi cho phép click lại.
+- `search_this_area` được tìm lại sau mỗi lần vuốt, không phụ thuộc trạng thái
+  của chu kỳ trước.
 - `search_this_area` và `new_available_rides` có hai cửa sổ xử lý riêng vì
   thời điểm xuất hiện của chúng khác nhau.
 - Tất cả thao tác tìm/nhấn yêu cầu điểm tương đồng tối thiểu 0.85.
@@ -70,8 +70,8 @@ searchAreaClickParam = timeout 300 ms, match score 0.85
 Script dùng tọa độ cố định trên màn hình:
 
 ```text
-Vuốt phải: (500, 1200) -> (750, 1200) trong 80 ms
-Vuốt trái: (750, 1200) -> (500, 1200) trong 80 ms
+Vuốt phải: (500, 1200) -> (750, 1200) trong 120 ms
+Vuốt trái: (750, 1200) -> (500, 1200) trong 120 ms
 ```
 
 Các tọa độ này phụ thuộc kích thước và tỉ lệ màn hình. Nếu thiết bị khác độ

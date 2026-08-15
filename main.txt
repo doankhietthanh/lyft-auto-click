@@ -1,36 +1,28 @@
 var popupRegion = Region.deviceReg().bottom()
 
-var findFastParam = FParam.timeout(50).mScore(0.85) 
+var findFastParam = FParam.timeout(100).mScore(0.85)
 var reserveParam = FParam.timeout(1500).mScore(0.85)
-var searchAreaFindParam = FParam.timeout(50).mScore(0.85)
-var searchAreaClickParam = FParam.timeout(300).mScore(0.85)
-var searchAreaVisible = false
+var searchAreaFindParam = FParam.timeout(150).mScore(0.85)
+var searchAreaClickParam = FParam.timeout(500).mScore(0.85)
 
 fun goLeft() {
-    var path = [SwipePoint(Point(750, 1200), 0, 20), SwipePoint(Point(500, 1200), 80, 20)]
+    var path = [SwipePoint(Point(750, 1200), 0, 20), SwipePoint(Point(500, 1200), 120, 20)]
     swipe(path)
 }
 
 fun goRight() {
-    var path = [SwipePoint(Point(500, 1200), 0, 20), SwipePoint(Point(750, 1200), 80, 20)]
+    var path = [SwipePoint(Point(500, 1200), 0, 20), SwipePoint(Point(750, 1200), 120, 20)]
     swipe(path)
 }
 
 fun checkSearchArea() {
     var result = popupRegion.find("search_this_area", searchAreaFindParam)
 
-    if (!result) {
-        searchAreaVisible = false
-        return false
-    }
-
-    if (searchAreaVisible)
+    if (!result)
         return false
 
-    if (popupRegion.click("search_this_area", searchAreaClickParam)) {
-        searchAreaVisible = true
+    if (popupRegion.click("search_this_area", searchAreaClickParam))
         return true
-    }
 
     return false
 }
@@ -44,7 +36,6 @@ fun checkNewAvaliableRides() {
     popupRegion.click("new_available_rides", findFastParam)
 
     if (popupRegion.click("btn_reserve", reserveParam)) {
-        return true
         popupRegion.click("btn_reserve_confirm", reserveParam)
         return true
     }
@@ -54,13 +45,12 @@ fun checkNewAvaliableRides() {
 
 fun clickSearchAreaAfterSwipe() {
     var attempt = 0
-    searchAreaVisible = false
 
-    while (attempt < 4) {
+    while (attempt < 6) {
         if (checkSearchArea())
             return true
 
-        wait(40)
+        wait(50)
         attempt = attempt + 1
     }
 
@@ -86,13 +76,13 @@ while (true) {
 
     clickSearchAreaAfterSwipe()
 
-    if (waitForNewRides(4))
+    if (waitForNewRides(8))
         break
 
     goLeft()
 
     clickSearchAreaAfterSwipe()
 
-    if (waitForNewRides(4))
+    if (waitForNewRides(8))
         break
 }
