@@ -1,30 +1,35 @@
 var popupRegion = Region.deviceReg().bottom()
 
-var findFastParam = FParam.timeout(100).mScore(0.85)
+var findFastParam = FParam.timeout(50).mScore(0.85) 
 var reserveParam = FParam.timeout(1500).mScore(0.85)
-var searchAreaFindParam = FParam.timeout(150).mScore(0.85)
-var searchAreaClickParam = FParam.timeout(500).mScore(0.85)
+var searchAreaFindParam = FParam.timeout(50).mScore(0.85)
+var searchAreaClickParam = FParam.timeout(100).mScore(0.85)
+var searchAreaVisible = false
 
 fun goLeft() {
-    var path = [SwipePoint(Point(750, 1200), 0, 20), SwipePoint(Point(500, 1200), 120, 20)]
+    var path = [SwipePoint(Point(750, 1200), 0, 20), SwipePoint(Point(500, 1200), 80, 20)]
     swipe(path)
 }
 
 fun goRight() {
-    var path = [SwipePoint(Point(500, 1200), 0, 20), SwipePoint(Point(750, 1200), 120, 20)]
+    var path = [SwipePoint(Point(500, 1200), 0, 20), SwipePoint(Point(750, 1200), 80, 20)]
     swipe(path)
 }
 
 fun checkSearchArea() {
-    var result = popupRegion.find("search_this_area", searchAreaFindParam)
+    if (searchAreaVisible) {
+        if (popupRegion.find("search_this_area", searchAreaFindParam))
+            return false
 
-    if (!result)
+        searchAreaVisible = false
+        return false
+    }
+
+    if (!popupRegion.click("search_this_area", searchAreaClickParam))
         return false
 
-    if (popupRegion.click("search_this_area", searchAreaClickParam))
-        return true
-
-    return false
+    searchAreaVisible = true
+    return true
 }
 
 fun checkNewAvaliableRides() {
@@ -37,34 +42,22 @@ fun checkNewAvaliableRides() {
 
     if (popupRegion.click("btn_reserve", reserveParam)) {
         popupRegion.click("btn_reserve_confirm", reserveParam)
-        return true
     }
     
-    return false
+    return true
 }
 
-fun clickSearchAreaAfterSwipe() {
+fun waitAndCheck(attempts) {
     var attempt = 0
-
-    while (attempt < 6) {
-        if (checkSearchArea())
-            return true
-
-        wait(50)
-        attempt = attempt + 1
-    }
-
-    return false
-}
-
-fun waitForNewRides(attempts) {
-    var attempt = 0
+    var interval = 50
 
     while (attempt < attempts) {
+        checkSearchArea()
+
         if (checkNewAvaliableRides())
             return true
 
-        wait(50)
+        wait(interval)
         attempt = attempt + 1
     }
 
@@ -74,15 +67,12 @@ fun waitForNewRides(attempts) {
 while (true) {
     goRight()
 
-    clickSearchAreaAfterSwipe()
-
-    if (waitForNewRides(8))
-        break
+    if (checkNewAvaliableRides()) break
+    if (waitAndCheck(4)) break
 
     goLeft()
 
-    clickSearchAreaAfterSwipe()
+    if (checkNewAvaliableRides()) break
+    if (waitAndCheck(4)) break
 
-    if (waitForNewRides(8))
-        break
 }
