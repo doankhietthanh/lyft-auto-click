@@ -38,5 +38,7 @@ fi
 passed=$((passed + 1))
 
 assert_match 'if \(!popupRegion\.click\("btn_reserve_confirm", reserveParam\)\)' 'confirmation-click failure must not report success'
+assert_match 'return reserveAvailableRide\(\)' 'a failed reservation must end the current swipe cycle'
+assert_not_match 'if \(reserveAvailableRide\(\)\)' 'a failed reservation must not repeat stale ride detection'
 
 print "PASS: $passed main flow invariants"

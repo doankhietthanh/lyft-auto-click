@@ -48,10 +48,8 @@ fun waitForAvailableRide() {
     var attempt = 0
 
     while (attempt < availableRideAttempts) {
-        if (popupRegion.find("new_available_rides", findFastParam)) {
-            if (reserveAvailableRide())
-                return true
-        }
+        if (popupRegion.find("new_available_rides", findFastParam))
+            return reserveAvailableRide()
 
         wait(pollInterval)
         attempt = attempt + 1
