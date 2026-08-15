@@ -16,22 +16,17 @@ Script chạy liên tục cho đến khi phát hiện được một chuyến:
    - Nhấn `new_available_rides`.
    - Thử tìm và nhấn `btn_reserve` trong tối đa 1.5 giây.
    - Dừng vòng lặp.
-4. Nếu chưa tìm thấy, tiếp tục kiểm tra mỗi 50 ms trong 200 ms.
-5. Nhấn `search_this_area` để yêu cầu Lyft tìm lại khu vực.
-6. Kiểm tra ngay, sau đó tiếp tục kiểm tra mỗi 50 ms trong 300 ms.
-7. Vuốt sang trái và lặp lại các bước kiểm tra/chờ/tìm lại khu vực.
+4. Nếu chưa tìm thấy, tiếp tục polling mỗi 50 ms trong 200 ms. Mỗi lần
+   polling cũng detect `search_this_area` và click nếu nút vừa xuất hiện.
+5. Vuốt sang trái và lặp lại.
 
 Trình tự vuốt và thời gian chờ của một chu kỳ là:
 
 ```text
 Vuốt phải
-  -> kiểm tra ngay -> chờ 200 ms
-  -> search_this_area
-  -> kiểm tra ngay -> chờ 300 ms
+  -> polling chuyến mới + search_this_area trong 200 ms
 Vuốt trái
-  -> kiểm tra ngay -> chờ 200 ms
-  -> search_this_area
-  -> kiểm tra ngay -> chờ 300 ms
+  -> polling chuyến mới + search_this_area trong 200 ms
   -> lặp lại
 ```
 
@@ -53,12 +48,15 @@ công cụ tự động click:
 ```text
 findFastParam = timeout 50 ms, match score 0.85
 reserveParam  = timeout 1500 ms, match score 0.85
-searchArea    = timeout 300 ms, match score 0.85
+searchAreaFindParam  = timeout 50 ms, match score 0.85
+searchAreaClickParam = timeout 100 ms, match score 0.85
 ```
 
 - `new_available_rides` được tìm nhanh với timeout 50 ms.
 - `btn_reserve` có thời gian tìm dài hơn vì màn hình chi tiết cần thời gian
   hiển thị.
+- `search_this_area` chỉ được click một lần cho mỗi lần nút xuất hiện; script
+  chờ nút biến mất trước khi cho phép click lại.
 - Tất cả thao tác tìm/nhấn yêu cầu điểm tương đồng tối thiểu 0.85.
 - Vùng tìm kiếm là `Region.deviceReg().bottom()`, tức phần dưới màn hình.
 
@@ -67,8 +65,8 @@ searchArea    = timeout 300 ms, match score 0.85
 Script dùng tọa độ cố định trên màn hình:
 
 ```text
-Vuốt phải: (500, 1200) -> (750, 1200) trong 100 ms
-Vuốt trái: (750, 1200) -> (500, 1200) trong 100 ms
+Vuốt phải: (500, 1200) -> (750, 1200) trong 60 ms
+Vuốt trái: (750, 1200) -> (500, 1200) trong 60 ms
 ```
 
 Các tọa độ này phụ thuộc kích thước và tỉ lệ màn hình. Nếu thiết bị khác độ
