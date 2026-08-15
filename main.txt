@@ -4,10 +4,9 @@ var findFastParam = FParam.timeout(100).mScore(0.85)
 var reserveParam = FParam.timeout(1500).mScore(0.85)
 var searchAreaClickParam = FParam.timeout(250).mScore(0.85)
 var swipeSettleDelay = 150
-var searchRequestSettleDelay = 100
+var apiResultDelay = 500
 var pollInterval = 75
 var searchAreaAttempts = 6
-var availableRideAttempts = 16
 
 fun goLeft() {
     var path = [SwipePoint(Point(750, 1200), 0, 20), SwipePoint(Point(500, 1200), 120, 20)]
@@ -46,18 +45,11 @@ fun reserveAvailableRide() {
     return true
 }
 
-fun waitForAvailableRide() {
-    var attempt = 0
+fun checkAvailableRideOnce() {
+    if (!popupRegion.find("new_available_rides", findFastParam))
+        return false
 
-    while (attempt < availableRideAttempts) {
-        if (popupRegion.find("new_available_rides", findFastParam))
-            return reserveAvailableRide()
-
-        wait(pollInterval)
-        attempt = attempt + 1
-    }
-
-    return false
+    return reserveAvailableRide()
 }
 
 fun scanAfterSwipe() {
@@ -66,9 +58,9 @@ fun scanAfterSwipe() {
     if (!clickSearchAreaAfterSwipe())
         return false
 
-    wait(searchRequestSettleDelay)
+    wait(apiResultDelay)
 
-    return waitForAvailableRide()
+    return checkAvailableRideOnce()
 }
 
 while (true) {

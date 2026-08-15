@@ -25,14 +25,14 @@ Trình tự vuốt và thời gian chờ của một chu kỳ là:
 Vuốt phải
   -> chờ UI settle 150 ms
   -> find/click search_this_area tối đa 6 lần, dừng ngay khi click được
-  -> chờ UI sau Search Area 100 ms
-  -> chờ new_available_rides tối đa 16 lần
+  -> chờ API trả kết quả 500 ms
+  -> probe new_available_rides một lần
   -> click ride -> Reserve -> Confirm
 Vuốt trái
   -> chờ UI settle 150 ms
   -> find/click search_this_area tối đa 6 lần, dừng ngay khi click được
-  -> chờ UI sau Search Area 100 ms
-  -> chờ new_available_rides tối đa 16 lần
+  -> chờ API trả kết quả 500 ms
+  -> probe new_available_rides một lần
   -> click ride -> Reserve -> Confirm
   -> lặp lại
 ```
@@ -58,19 +58,18 @@ findFastParam = timeout 100 ms, match score 0.85
 reserveParam  = timeout 1500 ms, match score 0.85
 searchAreaClickParam = timeout 250 ms, match score 0.85
 swipeSettleDelay = 150 ms
-searchRequestSettleDelay = 100 ms
+apiResultDelay = 500 ms
 pollInterval = 75 ms
 searchAreaAttempts = 6
-availableRideAttempts = 16
 ```
 
 - `search_this_area` được click lại cho từng swipe; không có trạng thái nào
   được giữ lại giữa hai swipe.
 - Script chờ 150 ms sau swipe để animation/map trên device thật ổn định trước
-  khi nhận diện Search Area, và chờ 100 ms sau click Search Area để UI bắt đầu
-  cập nhật.
-- `new_available_rides` được poll tối đa 16 lần, với timeout tìm 100 ms và
-  khoảng nghỉ 75 ms giữa các lần.
+  khi nhận diện Search Area, và chờ 500 ms sau click Search Area cho API
+  trả kết quả.
+- `new_available_rides` chỉ được probe một lần với timeout 100 ms. Điều này
+  tránh engine nhận diện bị block trong vòng poll lặp trên device thật.
 - `btn_reserve` có thời gian tìm dài hơn vì màn hình chi tiết cần thời gian
   hiển thị.
 - `btn_reserve_confirm` cũng dùng timeout 1.5 giây, để chờ màn hình xác nhận.
