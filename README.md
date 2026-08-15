@@ -8,28 +8,28 @@ nhấn Reserve bằng nhận diện hình ảnh.
 
 ## Luồng hoạt động
 
-Script chạy liên tục cho đến khi phát hiện được một chuyến:
+Script chạy liên tục cho đến khi click được toàn bộ chuỗi Reserve:
 
 1. Vuốt sang phải.
-2. Tìm ảnh `new_available_rides` trong vùng popup phía dưới màn hình.
-3. Nếu tìm thấy:
-   - Nhấn `new_available_rides`.
-   - Thử tìm và nhấn `btn_reserve` trong tối đa 1.5 giây.
-   - Dừng vòng lặp.
-4. Ngay sau mỗi lần vuốt, ưu tiên detect và click `search_this_area`; nếu UI
-   render trễ, thử lại tối đa 6 lần với khoảng nghỉ 50 ms.
-5. Sau đó chờ `new_available_rides` tối đa 8 lần với khoảng nghỉ 50 ms.
-6. Nếu chưa tìm thấy chuyến, vuốt sang hướng còn lại và lặp lại.
+2. Ngay sau swipe, tìm và click `search_this_area` đúng một lần. Click này
+   kích hoạt API tìm chuyến ở khu vực mới.
+3. Chờ API trả về `new_available_rides`.
+4. Nếu tìm thấy, lần lượt click `new_available_rides`, `btn_reserve`, và
+   `btn_reserve_confirm`.
+5. Chỉ dừng vòng lặp khi cả ba click trên đều thành công. Nếu một click thất
+   bại hoặc API không có kết quả, vuốt sang trái và lặp lại.
 
 Trình tự vuốt và thời gian chờ của một chu kỳ là:
 
 ```text
 Vuốt phải
-  -> find/click search_this_area tối đa 6 lần
-  -> chờ new_available_rides tối đa 8 lần
+  -> find/click search_this_area tối đa 8 lần, dừng ngay khi click được
+  -> chờ new_available_rides tối đa 20 lần
+  -> click ride -> Reserve -> Confirm
 Vuốt trái
-  -> find/click search_this_area tối đa 6 lần
-  -> chờ new_available_rides tối đa 8 lần
+  -> find/click search_this_area tối đa 8 lần, dừng ngay khi click được
+  -> chờ new_available_rides tối đa 20 lần
+  -> click ride -> Reserve -> Confirm
   -> lặp lại
 ```
 
@@ -43,27 +43,36 @@ công cụ tự động click:
 | `search_this_area` | Nút yêu cầu tìm lại chuyến trong khu vực hiện tại |
 | `new_available_rides` | Dấu hiệu có chuyến mới |
 | `btn_reserve` | Nút Reserve sau khi mở chuyến |
+| `btn_reserve_confirm` | Nút xác nhận Reserve |
 
 Ảnh minh họa thư viện nhận diện nằm tại [`resources/overview.png`](resources/overview.png).
 
 ## Tham số nhận diện
 
 ```text
-findFastParam = timeout 100 ms, match score 0.85
+findFastParam = timeout 50 ms, match score 0.85
 reserveParam  = timeout 1500 ms, match score 0.85
-searchAreaFindParam  = timeout 150 ms, match score 0.85
-searchAreaClickParam = timeout 500 ms, match score 0.85
+searchAreaClickParam = timeout 50 ms, match score 0.85
+pollInterval = 50 ms
+searchAreaAttempts = 8
+availableRideAttempts = 20
 ```
 
-- `new_available_rides` được tìm với timeout 100 ms.
+- `search_this_area` được click lại cho từng swipe; không có trạng thái nào
+  được giữ lại giữa hai swipe.
+- `new_available_rides` được poll tối đa 20 lần, với timeout tìm 50 ms và
+  khoảng nghỉ 50 ms giữa các lần.
 - `btn_reserve` có thời gian tìm dài hơn vì màn hình chi tiết cần thời gian
   hiển thị.
-- `search_this_area` được tìm lại sau mỗi lần vuốt, không phụ thuộc trạng thái
-  của chu kỳ trước.
-- `search_this_area` và `new_available_rides` có hai cửa sổ xử lý riêng vì
-  thời điểm xuất hiện của chúng khác nhau.
+- `btn_reserve_confirm` cũng dùng timeout 1.5 giây, để chờ màn hình xác nhận.
+- `search_this_area` và `new_available_rides` có hai pha riêng: tìm/click để
+  gọi API trước, rồi mới poll kết quả API.
 - Tất cả thao tác tìm/nhấn yêu cầu điểm tương đồng tối thiểu 0.85.
 - Vùng tìm kiếm là `Region.deviceReg().bottom()`, tức phần dưới màn hình.
+
+Việc script dừng nghĩa là ba thao tác click đã trả về thành công. Để xác minh
+việc đặt chuyến thực sự hoàn tất trên Lyft, hãy bổ sung một template trạng thái
+thành công riêng nếu UI có hiển thị trạng thái đó.
 
 ## Cấu hình thao tác vuốt
 
@@ -98,9 +107,9 @@ tiếp tục vuốt và tìm lại khu vực vô hạn.
     └── overview.png         # Ảnh tổng quan các template nhận diện
 ```
 
-## Lưu ý về `test.txt`
+## Kiểm tra flow
 
-`test.txt` hiện có cùng luồng với `main.txt`, nhưng bổ sung thao tác nhấn
-`btn_reserve_confirm` sau khi nhấn `btn_reserve`. README này mô tả chính xác
-luồng của `main.txt`; nếu cần xác nhận Reserve tự động, phải thêm template
-`btn_reserve_confirm` và thao tác xác nhận vào script chính.
+Chạy `zsh tests/main-flow.test.zsh` để kiểm tra tĩnh các điều kiện không được
+hồi quy: Search Area luôn chạy trước lúc poll kết quả API, không có trạng thái
+Search Area xuyên qua các swipe, và chuỗi thành công phải kiểm tra click
+Confirm. Test này không thay thế việc chạy thử trên thiết bị thật.
