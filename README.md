@@ -17,7 +17,7 @@ Script chạy liên tục cho đến khi phát hiện được một chuyến:
    - Thử tìm và nhấn `btn_reserve` trong tối đa 1.5 giây.
    - Dừng vòng lặp.
 4. Ngay sau mỗi lần vuốt, ưu tiên detect và click `search_this_area`; nếu UI
-   render trễ, thử lại tối đa 3 lần với khoảng nghỉ 30 ms.
+   render trễ, thử lại tối đa 4 lần với khoảng nghỉ 40 ms.
 5. Sau đó chờ `new_available_rides` tối đa 6 lần với khoảng nghỉ 50 ms.
 6. Nếu chưa tìm thấy chuyến, vuốt sang hướng còn lại và lặp lại.
 
@@ -25,10 +25,10 @@ Trình tự vuốt và thời gian chờ của một chu kỳ là:
 
 ```text
 Vuốt phải
-  -> click search_this_area
+  -> find/click search_this_area tối đa 4 lần
   -> chờ new_available_rides tối đa 6 lần
 Vuốt trái
-  -> click search_this_area
+  -> find/click search_this_area tối đa 4 lần
   -> chờ new_available_rides tối đa 6 lần
   -> lặp lại
 ```
@@ -51,8 +51,8 @@ công cụ tự động click:
 ```text
 findFastParam = timeout 50 ms, match score 0.85
 reserveParam  = timeout 1500 ms, match score 0.85
-searchAreaFindParam  = timeout 30 ms, match score 0.85
-searchAreaClickParam = timeout 100 ms, match score 0.85
+searchAreaFindParam  = timeout 50 ms, match score 0.85
+searchAreaClickParam = timeout 300 ms, match score 0.85
 ```
 
 - `new_available_rides` được tìm nhanh với timeout 50 ms.
