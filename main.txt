@@ -1,0 +1,69 @@
+var popupRegion = Region.deviceReg().bottom()
+
+var findFastParam = FParam.timeout(50).mScore(0.85) 
+var reserveParam = FParam.timeout(1500).mScore(0.85)
+
+fun goLeft() {
+    var path = [SwipePoint(Point(750, 1200), 0, 20), SwipePoint(Point(500, 1200), 100, 20)]
+    swipe(path)
+}
+
+fun goRight() {
+    var path = [SwipePoint(Point(500, 1200), 0, 20), SwipePoint(Point(750, 1200), 100, 20)]
+    swipe(path)
+}
+
+fun searchArea() {
+    popupRegion.click("search_this_area", FParam.timeout(300).mScore(0.85))
+}
+
+fun checkNewAvaliableRides() {
+    var result = popupRegion.find("new_available_rides", findFastParam)
+
+    if (!result)
+        return false
+
+    popupRegion.click("new_available_rides", findFastParam)
+
+    if (popupRegion.click("btn_reserve", reserveParam)) {
+    }
+    
+    return true
+}
+
+fun waitAndCheck(time) {
+    var elapsed = 0
+    var interval = 50
+
+    while (elapsed < time) {
+        if (checkNewAvaliableRides())
+            return true
+
+        wait(interval)
+        elapsed = elapsed + interval
+    }
+
+    return false
+}
+
+while (true) {
+    goRight()
+
+    if (checkNewAvaliableRides()) break
+    if (waitAndCheck(200)) break
+
+    searchArea()
+
+    if (checkNewAvaliableRides()) break
+    if (waitAndCheck(300)) break
+
+    goLeft()
+
+    if (checkNewAvaliableRides()) break
+    if (waitAndCheck(200)) break
+
+    searchArea()
+
+    if (checkNewAvaliableRides()) break
+    if (waitAndCheck(300)) break
+}
