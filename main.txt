@@ -1,19 +1,21 @@
 var popupRegion = Region.deviceReg().bottom()
 
-var findFastParam = FParam.timeout(50).mScore(0.85)
+var findFastParam = FParam.timeout(100).mScore(0.85)
 var reserveParam = FParam.timeout(1500).mScore(0.85)
-var searchAreaClickParam = FParam.timeout(50).mScore(0.85)
-var pollInterval = 50
-var searchAreaAttempts = 8
-var availableRideAttempts = 20
+var searchAreaClickParam = FParam.timeout(250).mScore(0.85)
+var swipeSettleDelay = 150
+var searchRequestSettleDelay = 100
+var pollInterval = 75
+var searchAreaAttempts = 6
+var availableRideAttempts = 16
 
 fun goLeft() {
-    var path = [SwipePoint(Point(750, 1200), 0, 20), SwipePoint(Point(500, 1200), 80, 20)]
+    var path = [SwipePoint(Point(750, 1200), 0, 20), SwipePoint(Point(500, 1200), 120, 20)]
     swipe(path)
 }
 
 fun goRight() {
-    var path = [SwipePoint(Point(500, 1200), 0, 20), SwipePoint(Point(750, 1200), 80, 20)]
+    var path = [SwipePoint(Point(500, 1200), 0, 20), SwipePoint(Point(750, 1200), 120, 20)]
     swipe(path)
 }
 
@@ -58,19 +60,21 @@ fun waitForAvailableRide() {
     return false
 }
 
-fun runSwipeCycle(direction) {
-    if (direction == "right")
-        goRight()
-    else
-        goLeft()
+fun scanAfterSwipe() {
+    wait(swipeSettleDelay)
 
     if (!clickSearchAreaAfterSwipe())
         return false
+
+    wait(searchRequestSettleDelay)
 
     return waitForAvailableRide()
 }
 
 while (true) {
-    if (runSwipeCycle("right")) break
-    if (runSwipeCycle("left")) break
+    goRight()
+    if (scanAfterSwipe()) break
+
+    goLeft()
+    if (scanAfterSwipe()) break
 }

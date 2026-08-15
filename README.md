@@ -23,12 +23,16 @@ Trình tự vuốt và thời gian chờ của một chu kỳ là:
 
 ```text
 Vuốt phải
-  -> find/click search_this_area tối đa 8 lần, dừng ngay khi click được
-  -> chờ new_available_rides tối đa 20 lần
+  -> chờ UI settle 150 ms
+  -> find/click search_this_area tối đa 6 lần, dừng ngay khi click được
+  -> chờ UI sau Search Area 100 ms
+  -> chờ new_available_rides tối đa 16 lần
   -> click ride -> Reserve -> Confirm
 Vuốt trái
-  -> find/click search_this_area tối đa 8 lần, dừng ngay khi click được
-  -> chờ new_available_rides tối đa 20 lần
+  -> chờ UI settle 150 ms
+  -> find/click search_this_area tối đa 6 lần, dừng ngay khi click được
+  -> chờ UI sau Search Area 100 ms
+  -> chờ new_available_rides tối đa 16 lần
   -> click ride -> Reserve -> Confirm
   -> lặp lại
 ```
@@ -50,18 +54,23 @@ công cụ tự động click:
 ## Tham số nhận diện
 
 ```text
-findFastParam = timeout 50 ms, match score 0.85
+findFastParam = timeout 100 ms, match score 0.85
 reserveParam  = timeout 1500 ms, match score 0.85
-searchAreaClickParam = timeout 50 ms, match score 0.85
-pollInterval = 50 ms
-searchAreaAttempts = 8
-availableRideAttempts = 20
+searchAreaClickParam = timeout 250 ms, match score 0.85
+swipeSettleDelay = 150 ms
+searchRequestSettleDelay = 100 ms
+pollInterval = 75 ms
+searchAreaAttempts = 6
+availableRideAttempts = 16
 ```
 
 - `search_this_area` được click lại cho từng swipe; không có trạng thái nào
   được giữ lại giữa hai swipe.
-- `new_available_rides` được poll tối đa 20 lần, với timeout tìm 50 ms và
-  khoảng nghỉ 50 ms giữa các lần.
+- Script chờ 150 ms sau swipe để animation/map trên device thật ổn định trước
+  khi nhận diện Search Area, và chờ 100 ms sau click Search Area để UI bắt đầu
+  cập nhật.
+- `new_available_rides` được poll tối đa 16 lần, với timeout tìm 100 ms và
+  khoảng nghỉ 75 ms giữa các lần.
 - `btn_reserve` có thời gian tìm dài hơn vì màn hình chi tiết cần thời gian
   hiển thị.
 - `btn_reserve_confirm` cũng dùng timeout 1.5 giây, để chờ màn hình xác nhận.

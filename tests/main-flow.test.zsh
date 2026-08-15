@@ -26,6 +26,9 @@ assert_match 'fun clickSearchAreaAfterSwipe' 'missing per-swipe Search Area help
 assert_match 'fun waitForAvailableRide' 'missing API-result polling helper'
 assert_match 'fun reserveAvailableRide' 'missing complete reservation helper'
 assert_not_match 'searchAreaVisible' 'persistent Search Area state must not cross swipes'
+assert_match 'var swipeSettleDelay = 150' 'missing physical-device swipe settle delay'
+assert_match 'var searchRequestSettleDelay = 100' 'missing post-search UI settle delay'
+assert_match 'var searchAreaClickParam = FParam.timeout\(250\)' 'Search Area match window is too short for a physical device'
 
 search_call_line=$(rg -n 'clickSearchAreaAfterSwipe\(\)' "$main_file" | tail -1 | cut -d: -f1)
 ride_call_line=$(rg -n 'waitForAvailableRide\(\)' "$main_file" | tail -1 | cut -d: -f1)
@@ -40,5 +43,7 @@ passed=$((passed + 1))
 assert_match 'if \(!popupRegion\.click\("btn_reserve_confirm", reserveParam\)\)' 'confirmation-click failure must not report success'
 assert_match 'return reserveAvailableRide\(\)' 'a failed reservation must end the current swipe cycle'
 assert_not_match 'if \(reserveAvailableRide\(\)\)' 'a failed reservation must not repeat stale ride detection'
+assert_match 'wait\(swipeSettleDelay\)' 'Search Area must wait for the swipe animation to settle'
+assert_match 'wait\(searchRequestSettleDelay\)' 'ride polling must wait for the Search Area click to render'
 
 print "PASS: $passed main flow invariants"
