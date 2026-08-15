@@ -2,8 +2,8 @@ var popupRegion = Region.deviceReg().bottom()
 
 var findFastParam = FParam.timeout(50).mScore(0.85) 
 var reserveParam = FParam.timeout(1500).mScore(0.85)
-var searchAreaFindParam = FParam.timeout(50).mScore(0.85)
-var searchAreaClickParam = FParam.timeout(100).mScore(0.85)
+var searchAreaFindParam = FParam.timeout(20).mScore(0.85)
+var searchAreaClickParam = FParam.timeout(80).mScore(0.85)
 var searchAreaVisible = false
 
 fun goLeft() {
@@ -47,19 +47,11 @@ fun checkNewAvaliableRides() {
     return true
 }
 
-fun waitAndCheck(attempts) {
-    var attempt = 0
-    var interval = 50
+fun checkButtons() {
+    checkSearchArea()
 
-    while (attempt < attempts) {
-        checkSearchArea()
-
-        if (checkNewAvaliableRides())
-            return true
-
-        wait(interval)
-        attempt = attempt + 1
-    }
+    if (checkNewAvaliableRides())
+        return true
 
     return false
 }
@@ -67,12 +59,11 @@ fun waitAndCheck(attempts) {
 while (true) {
     goRight()
 
-    if (checkNewAvaliableRides()) break
-    if (waitAndCheck(4)) break
+    if (checkButtons())
+        break
 
     goLeft()
 
-    if (checkNewAvaliableRides()) break
-    if (waitAndCheck(4)) break
-
+    if (checkButtons())
+        break
 }

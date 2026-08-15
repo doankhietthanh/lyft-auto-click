@@ -16,17 +16,16 @@ Script chạy liên tục cho đến khi phát hiện được một chuyến:
    - Nhấn `new_available_rides`.
    - Thử tìm và nhấn `btn_reserve` trong tối đa 1.5 giây.
    - Dừng vòng lặp.
-4. Nếu chưa tìm thấy, thực hiện 4 lần polling với khoảng nghỉ 50 ms. Mỗi lần
-   polling cũng kiểm tra `search_this_area` và click nếu nút vừa xuất hiện.
-5. Vuốt sang trái và lặp lại.
+4. Nếu chưa tìm thấy, vuốt sang trái ngay và kiểm tra lại các nút.
+5. Lặp liên tục cho đến khi tìm thấy chuyến mới.
 
 Trình tự vuốt và thời gian chờ của một chu kỳ là:
 
 ```text
 Vuốt phải
-  -> polling chuyến mới + search_this_area (4 lần, nghỉ 50 ms)
+  -> kiểm tra nhanh các nút
 Vuốt trái
-  -> polling chuyến mới + search_this_area (4 lần, nghỉ 50 ms)
+  -> kiểm tra nhanh các nút
   -> lặp lại
 ```
 
@@ -48,8 +47,8 @@ công cụ tự động click:
 ```text
 findFastParam = timeout 50 ms, match score 0.85
 reserveParam  = timeout 1500 ms, match score 0.85
-searchAreaFindParam  = timeout 50 ms, match score 0.85
-searchAreaClickParam = timeout 100 ms, match score 0.85
+searchAreaFindParam  = timeout 20 ms, match score 0.85
+searchAreaClickParam = timeout 80 ms, match score 0.85
 ```
 
 - `new_available_rides` được tìm nhanh với timeout 50 ms.
@@ -57,6 +56,8 @@ searchAreaClickParam = timeout 100 ms, match score 0.85
   hiển thị.
 - `search_this_area` chỉ được click một lần cho mỗi lần nút xuất hiện; script
   chờ nút biến mất trước khi cho phép click lại.
+- Khi không có nút nào, script không dùng khoảng chờ polling cố định mà tiếp
+  tục vuốt sang hướng còn lại.
 - Tất cả thao tác tìm/nhấn yêu cầu điểm tương đồng tối thiểu 0.85.
 - Vùng tìm kiếm là `Region.deviceReg().bottom()`, tức phần dưới màn hình.
 
