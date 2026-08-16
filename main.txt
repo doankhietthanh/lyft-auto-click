@@ -1,11 +1,12 @@
 var popupRegion = Region.deviceReg().bottom()
 var searchAreaRegion = Region.deviceReg().center()
 
-var findFastParam = FParam.timeout(1000).mScore(0.85)
+var findFastParam = FParam.timeout(500).mScore(0.85)
+var priorityRideParam = FParam.timeout(50).mScore(0.85)
 var reserveParam = FParam.timeout(1500).mScore(0.85)
 var searchAreaClickParam = FParam.timeout(250).mScore(0.85)
-var swipeSettleDelay = 150
-var apiResultDelay = 1000
+var swipeSettleDelay = 50
+var apiResultDelay = 500
 var pollInterval = 75
 var searchAreaAttempts = 6
 
@@ -37,12 +38,8 @@ fun reserveAvailableRide() {
     if (!popupRegion.click("new_available_rides", findFastParam))
         return false
 
-    wait(300)
-
     if (!popupRegion.click("btn_reserve", reserveParam))
         return false
-
-    wait(300)
 
     if (!popupRegion.click("btn_reserve_confirm", reserveParam))
         return false
@@ -59,6 +56,9 @@ fun checkAvailableRideOnce() {
 
 fun scanAfterSwipe() {
     wait(swipeSettleDelay)
+
+    if (popupRegion.find("new_available_rides", priorityRideParam))
+        return reserveAvailableRide()
 
     if (!clickSearchAreaAfterSwipe())
         return false

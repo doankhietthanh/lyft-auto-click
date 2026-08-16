@@ -26,17 +26,19 @@ assert_match 'fun clickSearchAreaAfterSwipe' 'missing per-swipe Search Area help
 assert_match 'fun checkAvailableRideOnce' 'missing one-shot API-result probe'
 assert_match 'fun reserveAvailableRide' 'missing complete reservation helper'
 assert_not_match 'searchAreaVisible' 'persistent Search Area state must not cross swipes'
-assert_match 'var swipeSettleDelay = 150' 'missing physical-device swipe settle delay'
+assert_match 'var swipeSettleDelay = 50' 'missing physical-device swipe settle delay'
 assert_match 'var apiResultDelay = 500' 'missing bounded API-result wait'
+assert_match 'var priorityRideParam = FParam.timeout\(50\)' 'missing immediate ride probe timeout'
 assert_match 'var searchAreaClickParam = FParam.timeout\(250\)' 'Search Area match window is too short for a physical device'
 assert_match 'var searchAreaRegion = Region.deviceReg\(\)\.center\(\)' 'Search Area must use the center region'
 assert_match 'searchAreaRegion\.click\("search_this_area"' 'Search Area must use its dedicated region'
 
 search_call_line=$(rg -n 'clickSearchAreaAfterSwipe\(\)' "$main_file" | tail -1 | cut -d: -f1)
 ride_call_line=$(rg -n 'checkAvailableRideOnce\(\)' "$main_file" | tail -1 | cut -d: -f1)
+priority_line=$(rg -n 'popupRegion\.find\("new_available_rides", priorityRideParam\)' "$main_file" | tail -1 | cut -d: -f1)
 
-if [[ -z "$search_call_line" || -z "$ride_call_line" || "$search_call_line" -ge "$ride_call_line" ]]; then
-    print -u2 'FAIL: Search Area must run before API-result polling'
+if [[ -z "$priority_line" || -z "$search_call_line" || "$priority_line" -ge "$search_call_line" ]]; then
+    print -u2 'FAIL: immediate ride probe must run before Search Area'
     exit 1
 fi
 

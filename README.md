@@ -11,12 +11,14 @@ nhấn Reserve bằng nhận diện hình ảnh.
 Script chạy liên tục cho đến khi click được toàn bộ chuỗi Reserve:
 
 1. Vuốt sang phải.
-2. Ngay sau swipe, tìm và click `search_this_area` đúng một lần. Click này
+2. Ngay sau swipe, ưu tiên kiểm tra `new_available_rides`. Nếu đã xuất hiện,
+   xử lý Reserve ngay và không click Search Area để tránh làm mất ride.
+3. Nếu chưa có ride, tìm và click `search_this_area` đúng một lần. Click này
    kích hoạt API tìm chuyến ở khu vực mới.
-3. Chờ API trả về `new_available_rides`.
-4. Nếu tìm thấy, lần lượt click `new_available_rides`, `btn_reserve`, và
+4. Chờ API trả về `new_available_rides`.
+5. Nếu tìm thấy, lần lượt click `new_available_rides`, `btn_reserve`, và
    `btn_reserve_confirm`.
-5. Chỉ dừng vòng lặp khi cả ba click trên đều thành công. Nếu một click thất
+6. Chỉ dừng vòng lặp khi cả ba click trên đều thành công. Nếu một click thất
    bại hoặc API không có kết quả, vuốt sang trái và lặp lại.
 
 Trình tự vuốt và thời gian chờ của một chu kỳ là:
@@ -24,13 +26,15 @@ Trình tự vuốt và thời gian chờ của một chu kỳ là:
 ```text
 Vuốt phải
   -> chờ UI settle 150 ms
-  -> find/click search_this_area tối đa 6 lần, dừng ngay khi click được
+  -> probe new_available_rides ngay lập tức
+  -> nếu chưa có: find/click search_this_area tối đa 6 lần, dừng ngay khi click được
   -> chờ API trả kết quả 500 ms
   -> probe new_available_rides một lần
   -> click ride -> Reserve -> Confirm
 Vuốt trái
   -> chờ UI settle 150 ms
-  -> find/click search_this_area tối đa 6 lần, dừng ngay khi click được
+  -> probe new_available_rides ngay lập tức
+  -> nếu chưa có: find/click search_this_area tối đa 6 lần, dừng ngay khi click được
   -> chờ API trả kết quả 500 ms
   -> probe new_available_rides một lần
   -> click ride -> Reserve -> Confirm
@@ -54,10 +58,11 @@ công cụ tự động click:
 ## Tham số nhận diện
 
 ```text
-findFastParam = timeout 100 ms, match score 0.85
+findFastParam = timeout 1000 ms, match score 0.85
+priorityRideParam = timeout 50 ms, match score 0.85
 reserveParam  = timeout 1500 ms, match score 0.85
 searchAreaClickParam = timeout 250 ms, match score 0.85
-swipeSettleDelay = 150 ms
+swipeSettleDelay = 50 ms
 apiResultDelay = 500 ms
 pollInterval = 75 ms
 searchAreaAttempts = 6
@@ -65,11 +70,12 @@ searchAreaAttempts = 6
 
 - `search_this_area` được click lại cho từng swipe; không có trạng thái nào
   được giữ lại giữa hai swipe.
-- Script chờ 150 ms sau swipe để animation/map trên device thật ổn định trước
+- Script chờ 50 ms sau swipe để animation/map trên device thật ổn định trước
   khi nhận diện Search Area, và chờ 500 ms sau click Search Area cho API
   trả kết quả.
-- `new_available_rides` chỉ được probe một lần với timeout 100 ms. Điều này
-  tránh engine nhận diện bị block trong vòng poll lặp trên device thật.
+- `new_available_rides` được probe ưu tiên với timeout 50 ms trước Search Area,
+  sau đó probe lại một lần sau cửa sổ API. Điều này tránh Search Area ghi đè
+  ride đã xuất hiện.
 - `btn_reserve` có thời gian tìm dài hơn vì màn hình chi tiết cần thời gian
   hiển thị.
 - `btn_reserve_confirm` cũng dùng timeout 1.5 giây, để chờ màn hình xác nhận.
