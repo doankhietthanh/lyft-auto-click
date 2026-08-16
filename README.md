@@ -87,8 +87,8 @@ thành công riêng nếu UI có hiển thị trạng thái đó.
 Script dùng tọa độ cố định trên màn hình:
 
 ```text
-Vuốt phải: (500, 1200) -> (750, 1200) trong 120 ms
-Vuốt trái: (750, 1200) -> (500, 1200) trong 120 ms
+Vuốt phải: (500, 1000) -> (750, 1000) trong 120 ms
+Vuốt trái: (750, 1000) -> (500, 1000) trong 120 ms
 ```
 
 Các tọa độ này phụ thuộc kích thước và tỉ lệ màn hình. Nếu thiết bị khác độ

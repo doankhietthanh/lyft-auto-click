@@ -1,6 +1,6 @@
 var popupRegion = Region.deviceReg().bottom()
 
-var findFastParam = FParam.timeout(100).mScore(0.85)
+var findFastParam = FParam.timeout(1000).mScore(0.85)
 var reserveParam = FParam.timeout(1500).mScore(0.85)
 var searchAreaClickParam = FParam.timeout(250).mScore(0.85)
 var swipeSettleDelay = 150
@@ -9,12 +9,12 @@ var pollInterval = 75
 var searchAreaAttempts = 6
 
 fun goLeft() {
-    var path = [SwipePoint(Point(750, 1200), 0, 20), SwipePoint(Point(500, 1200), 120, 20)]
+    var path = [SwipePoint(Point(750, 1000), 0, 20), SwipePoint(Point(500, 1000), 120, 20)]
     swipe(path)
 }
 
 fun goRight() {
-    var path = [SwipePoint(Point(500, 1200), 0, 20), SwipePoint(Point(750, 1200), 120, 20)]
+    var path = [SwipePoint(Point(500, 1000), 0, 20), SwipePoint(Point(750, 1000), 120, 20)]
     swipe(path)
 }
 
