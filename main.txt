@@ -1,5 +1,5 @@
 var popupRegion = Region.deviceReg().bottom()
-var searchAreaRegion = Region.deviceReg().center()
+var searchAreaRegion = Region.deviceReg().middle()
 
 var findFastParam = FParam.timeout(500).mScore(0.85)
 var priorityRideParam = FParam.timeout(50).mScore(0.85)
