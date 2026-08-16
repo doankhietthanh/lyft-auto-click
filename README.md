@@ -76,7 +76,10 @@ searchAreaAttempts = 6
 - `search_this_area` và `new_available_rides` có hai pha riêng: tìm/click để
   gọi API trước, rồi mới poll kết quả API.
 - Tất cả thao tác tìm/nhấn yêu cầu điểm tương đồng tối thiểu 0.85.
-- Vùng tìm kiếm là `Region.deviceReg().bottom()`, tức phần dưới màn hình.
+- `search_this_area` dùng vùng riêng `Region.deviceReg().center()`, tức khu
+  vực trung tâm màn hình.
+- `new_available_rides`, `btn_reserve`, và `btn_reserve_confirm` tiếp tục dùng
+  `Region.deviceReg().bottom()`.
 
 Việc script dừng nghĩa là ba thao tác click đã trả về thành công. Để xác minh
 việc đặt chuyến thực sự hoàn tất trên Lyft, hãy bổ sung một template trạng thái

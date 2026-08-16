@@ -1,4 +1,5 @@
 var popupRegion = Region.deviceReg().bottom()
+var searchAreaRegion = Region.deviceReg().center()
 
 var findFastParam = FParam.timeout(1000).mScore(0.85)
 var reserveParam = FParam.timeout(1500).mScore(0.85)
@@ -22,7 +23,7 @@ fun clickSearchAreaAfterSwipe() {
     var attempt = 0
 
     while (attempt < searchAreaAttempts) {
-        if (popupRegion.click("search_this_area", searchAreaClickParam))
+        if (searchAreaRegion.click("search_this_area", searchAreaClickParam))
             return true
 
         wait(pollInterval)

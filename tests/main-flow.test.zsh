@@ -29,6 +29,8 @@ assert_not_match 'searchAreaVisible' 'persistent Search Area state must not cros
 assert_match 'var swipeSettleDelay = 150' 'missing physical-device swipe settle delay'
 assert_match 'var apiResultDelay = 500' 'missing bounded API-result wait'
 assert_match 'var searchAreaClickParam = FParam.timeout\(250\)' 'Search Area match window is too short for a physical device'
+assert_match 'var searchAreaRegion = Region.deviceReg\(\)\.center\(\)' 'Search Area must use the center region'
+assert_match 'searchAreaRegion\.click\("search_this_area"' 'Search Area must use its dedicated region'
 
 search_call_line=$(rg -n 'clickSearchAreaAfterSwipe\(\)' "$main_file" | tail -1 | cut -d: -f1)
 ride_call_line=$(rg -n 'checkAvailableRideOnce\(\)' "$main_file" | tail -1 | cut -d: -f1)
