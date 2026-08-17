@@ -24,14 +24,20 @@ assert_not_match() {
 
 assert_match 'fun clickSearchAreaAfterSwipe' 'missing per-swipe Search Area helper'
 assert_match 'fun checkAvailableRideOnce' 'missing one-shot API-result probe'
+assert_match 'fun revealAvailableRides' 'missing available rides fallback helper'
+assert_match 'fun checkAvailableRideWithFallback' 'missing fallback ride flow'
 assert_match 'fun reserveAvailableRide' 'missing complete reservation helper'
 assert_not_match 'searchAreaVisible' 'persistent Search Area state must not cross swipes'
 assert_match 'var swipeSettleDelay = 50' 'missing physical-device swipe settle delay'
 assert_match 'var apiResultDelay = 500' 'missing bounded API-result wait'
 assert_match 'var priorityRideParam = FParam.timeout\(50\)' 'missing immediate ride probe timeout'
 assert_match 'var searchAreaClickParam = FParam.timeout\(250\)' 'Search Area match window is too short for a physical device'
-assert_match 'var searchAreaRegion = Region.deviceReg\(\)\.center\(\)' 'Search Area must use the center region'
+assert_match 'var searchAreaRegion = Region.deviceReg\(\)\.middle\(\)' 'Search Area must use the middle region'
 assert_match 'searchAreaRegion\.click\("search_this_area"' 'Search Area must use its dedicated region'
+assert_match 'available_rides' 'missing available rides fallback template'
+assert_match 'swipe_handle' 'missing swipe handle fallback template'
+assert_match 'return checkAvailableRideWithFallback\(\)' 'API result phase must use the fallback flow'
+assert_match 'SwipePoint\(Point\(500, 1100\)' 'fallback swipe must start near the handle'
 
 search_call_line=$(rg -n 'clickSearchAreaAfterSwipe\(\)' "$main_file" | tail -1 | cut -d: -f1)
 ride_call_line=$(rg -n 'checkAvailableRideOnce\(\)' "$main_file" | tail -1 | cut -d: -f1)

@@ -16,9 +16,12 @@ Script chạy liên tục cho đến khi click được toàn bộ chuỗi Reser
 3. Nếu chưa có ride, tìm và click `search_this_area` đúng một lần. Click này
    kích hoạt API tìm chuyến ở khu vực mới.
 4. Chờ API trả về `new_available_rides`.
-5. Nếu tìm thấy, lần lượt click `new_available_rides`, `btn_reserve`, và
+5. Nếu chưa thấy `new_available_rides`, tìm `available_rides` và `swipe_handle`.
+   Khi cả hai xuất hiện, kéo handle lên, chờ UI settle, rồi tìm lại
+   `new_available_rides`.
+6. Nếu tìm thấy, lần lượt click `new_available_rides`, `btn_reserve`, và
    `btn_reserve_confirm`.
-6. Chỉ dừng vòng lặp khi cả ba click trên đều thành công. Nếu một click thất
+7. Chỉ dừng vòng lặp khi cả ba click trên đều thành công. Nếu một click thất
    bại hoặc API không có kết quả, vuốt sang trái và lặp lại.
 
 Trình tự vuốt và thời gian chờ của một chu kỳ là:
@@ -30,6 +33,8 @@ Vuốt phải
   -> nếu chưa có: find/click search_this_area tối đa 6 lần, dừng ngay khi click được
   -> chờ API trả kết quả 500 ms
   -> probe new_available_rides một lần
+  -> nếu chưa có: probe available_rides + swipe_handle
+  -> kéo handle lên -> probe lại new_available_rides
   -> click ride -> Reserve -> Confirm
 Vuốt trái
   -> chờ UI settle 150 ms
@@ -37,6 +42,8 @@ Vuốt trái
   -> nếu chưa có: find/click search_this_area tối đa 6 lần, dừng ngay khi click được
   -> chờ API trả kết quả 500 ms
   -> probe new_available_rides một lần
+  -> nếu chưa có: probe available_rides + swipe_handle
+  -> kéo handle lên -> probe lại new_available_rides
   -> click ride -> Reserve -> Confirm
   -> lặp lại
 ```
@@ -50,6 +57,8 @@ công cụ tự động click:
 | --- | --- |
 | `search_this_area` | Nút yêu cầu tìm lại chuyến trong khu vực hiện tại |
 | `new_available_rides` | Dấu hiệu có chuyến mới |
+| `available_rides` | Fallback container khi danh sách ride đang thu gọn |
+| `swipe_handle` | Handle kéo danh sách ride lên |
 | `btn_reserve` | Nút Reserve sau khi mở chuyến |
 | `btn_reserve_confirm` | Nút xác nhận Reserve |
 
@@ -58,7 +67,7 @@ công cụ tự động click:
 ## Tham số nhận diện
 
 ```text
-findFastParam = timeout 1000 ms, match score 0.85
+findFastParam = timeout 500 ms, match score 0.85
 priorityRideParam = timeout 50 ms, match score 0.85
 reserveParam  = timeout 1500 ms, match score 0.85
 searchAreaClickParam = timeout 250 ms, match score 0.85
@@ -74,8 +83,9 @@ searchAreaAttempts = 6
   khi nhận diện Search Area, và chờ 500 ms sau click Search Area cho API
   trả kết quả.
 - `new_available_rides` được probe ưu tiên với timeout 50 ms trước Search Area,
-  sau đó probe lại một lần sau cửa sổ API. Điều này tránh Search Area ghi đè
-  ride đã xuất hiện.
+  sau đó probe lại một lần sau cửa sổ API.
+- Khi probe sau API thất bại, script tìm `available_rides` và `swipe_handle`,
+  kéo dọc từ `(500, 1100)` lên `(500, 700)` trong 120 ms, rồi probe lại ride.
 - `btn_reserve` có thời gian tìm dài hơn vì màn hình chi tiết cần thời gian
   hiển thị.
 - `btn_reserve_confirm` cũng dùng timeout 1.5 giây, để chờ màn hình xác nhận.

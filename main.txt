@@ -54,6 +54,26 @@ fun checkAvailableRideOnce() {
     return reserveAvailableRide()
 }
 
+fun revealAvailableRides() {
+    if (!popupRegion.find("available_rides", findFastParam))
+        return false
+
+    var path = [SwipePoint(Point(500, 1100), 0, 20), SwipePoint(Point(500, 700), 120, 20)]
+    swipe(path)
+    wait(swipeSettleDelay)
+    return true
+}
+
+fun checkAvailableRideWithFallback() {
+    if (checkAvailableRideOnce())
+        return true
+
+    if (!revealAvailableRides())
+        return false
+
+    return checkAvailableRideOnce()
+}
+
 fun scanAfterSwipe() {
     wait(swipeSettleDelay)
 
@@ -65,7 +85,7 @@ fun scanAfterSwipe() {
 
     wait(apiResultDelay)
 
-    return checkAvailableRideOnce()
+    return checkAvailableRideWithFallback()
 }
 
 while (true) {
