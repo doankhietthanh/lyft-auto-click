@@ -28,7 +28,7 @@ Trình tự vuốt và thời gian chờ của một chu kỳ là:
 
 ```text
 Vuốt phải
-  -> chờ UI settle 150 ms
+  -> chờ UI settle 50 ms
   -> probe new_available_rides ngay lập tức
   -> nếu chưa có: find/click search_this_area tối đa 6 lần, dừng ngay khi click được
   -> chờ API trả kết quả 500 ms
@@ -37,7 +37,7 @@ Vuốt phải
   -> kéo dọc vùng thấp -> probe lại new_available_rides
   -> click ride -> Reserve -> Confirm
 Vuốt trái
-  -> chờ UI settle 150 ms
+  -> chờ UI settle 50 ms
   -> probe new_available_rides ngay lập tức
   -> nếu chưa có: find/click search_this_area tối đa 6 lần, dừng ngay khi click được
   -> chờ API trả kết quả 500 ms
@@ -53,22 +53,22 @@ Vuốt trái
 Các tên ảnh được tham chiếu trong script phải tồn tại trong thư viện ảnh của
 công cụ tự động click:
 
-| Tên ảnh | Vai trò |
-| --- | --- |
-| `search_this_area` | Nút yêu cầu tìm lại chuyến trong khu vực hiện tại |
-| `new_available_rides` | Dấu hiệu có chuyến mới |
-| `available_rides` | Fallback container khi danh sách ride đang thu gọn |
-| `btn_reserve` | Nút Reserve sau khi mở chuyến |
-| `btn_reserve_confirm` | Nút xác nhận Reserve |
+| Tên ảnh               | Vai trò                                            |
+| --------------------- | -------------------------------------------------- |
+| `search_this_area`    | Nút yêu cầu tìm lại chuyến trong khu vực hiện tại  |
+| `new_available_rides` | Dấu hiệu có chuyến mới                             |
+| `available_rides`     | Fallback container khi danh sách ride đang thu gọn |
+| `btn_reserve`         | Nút Reserve sau khi mở chuyến                      |
+| `btn_reserve_confirm` | Nút xác nhận Reserve                               |
 
 Ảnh minh họa thư viện nhận diện nằm tại [`resources/overview.png`](resources/overview.png).
 
 ## Tham số nhận diện
 
 ```text
-findFastParam = timeout 300 ms, match score 0.85
+findFastParam = timeout 200 ms, match score 0.85
 priorityRideParam = timeout 50 ms, match score 0.85
-reserveParam  = timeout 1000 ms, match score 0.85
+reserveParam  = timeout 500 ms, match score 0.85
 searchAreaClickParam = timeout 200 ms, match score 0.85
 swipeSettleDelay = 50 ms
 apiResultDelay = 500 ms
@@ -84,14 +84,13 @@ searchAreaAttempts = 6
 - `new_available_rides` được probe ưu tiên với timeout 50 ms trước Search Area,
   sau đó probe lại một lần sau cửa sổ API.
 - Khi probe sau API thất bại, script tìm `available_rides`, kéo dọc từ
-  `(500, 1300)` lên `(500, 900)` trong 120 ms, rồi probe lại ride.
-- `btn_reserve` có thời gian tìm dài hơn vì màn hình chi tiết cần thời gian
-  hiển thị.
-- `btn_reserve_confirm` cũng dùng timeout 1.5 giây, để chờ màn hình xác nhận.
+  `(500, 1600)` lên `(500, 1200)` trong 120 ms, rồi probe lại ride.
+- `btn_reserve` và `btn_reserve_confirm` dùng timeout 500 ms để chờ màn hình
+  chi tiết và xác nhận hiển thị.
 - `search_this_area` và `new_available_rides` có hai pha riêng: tìm/click để
-  gọi API trước, rồi mới poll kết quả API.
+  gọi API trước, rồi probe kết quả API một lần.
 - Tất cả thao tác tìm/nhấn yêu cầu điểm tương đồng tối thiểu 0.85.
-- `search_this_area` dùng vùng riêng `Region.deviceReg().center()`, tức khu
+- `search_this_area` dùng vùng riêng `Region.deviceReg().middle()`, tức khu
   vực trung tâm màn hình.
 - `new_available_rides`, `btn_reserve`, và `btn_reserve_confirm` tiếp tục dùng
   `Region.deviceReg().bottom()`.
@@ -136,6 +135,6 @@ tiếp tục vuốt và tìm lại khu vực vô hạn.
 ## Kiểm tra flow
 
 Chạy `zsh tests/main-flow.test.zsh` để kiểm tra tĩnh các điều kiện không được
-hồi quy: Search Area luôn chạy trước lúc poll kết quả API, không có trạng thái
+hồi quy: ride được ưu tiên trước Search Area, không có trạng thái
 Search Area xuyên qua các swipe, và chuỗi thành công phải kiểm tra click
 Confirm. Test này không thay thế việc chạy thử trên thiết bị thật.

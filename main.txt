@@ -1,9 +1,9 @@
 var popupRegion = Region.deviceReg().bottom()
 var searchAreaRegion = Region.deviceReg().middle()
 
-var findFastParam = FParam.timeout(300).mScore(0.85)
+var findFastParam = FParam.timeout(200).mScore(0.85)
 var priorityRideParam = FParam.timeout(50).mScore(0.85)
-var reserveParam = FParam.timeout(1000).mScore(0.85)
+var reserveParam = FParam.timeout(500).mScore(0.85)
 var searchAreaClickParam = FParam.timeout(200).mScore(0.85)
 var swipeSettleDelay = 50
 var apiResultDelay = 500
@@ -58,7 +58,7 @@ fun revealAvailableRides() {
     if (!popupRegion.find("available_rides", findFastParam))
         return false
 
-    var path = [SwipePoint(Point(500, 1300), 0, 20), SwipePoint(Point(500, 900), 120, 20)]
+    var path = [SwipePoint(Point(500, 1600), 0, 20), SwipePoint(Point(500, 1200), 120, 20)]
     swipe(path)
     wait(swipeSettleDelay)
     return true
