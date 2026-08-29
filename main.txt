@@ -85,7 +85,7 @@ fun scanAfterSwipe() {
 
     wait(apiResultDelay)
 
-    return checkAvailableRideWithFallback()
+    return checkAvailableRideOnce()
 }
 
 while (true) {
