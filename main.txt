@@ -5,8 +5,8 @@ var findFastParam = FParam.timeout(200).mScore(0.85)
 var priorityRideParam = FParam.timeout(50).mScore(0.85)
 var reserveParam = FParam.timeout(500).mScore(0.85)
 var searchAreaClickParam = FParam.timeout(200).mScore(0.85)
-var swipeSettleDelay = 1000
-var apiResultDelay = 1000
+var swipeSettleDelay = 200
+var apiResultDelay = 500
 var pollInterval = 75
 var searchAreaAttempts = 6
 
