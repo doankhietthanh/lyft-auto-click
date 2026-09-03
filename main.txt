@@ -1,14 +1,12 @@
 var popupRegion = Region.deviceReg().bottom()
-var searchAreaRegion = Region.deviceReg().middle()
+var searchAreaRegion = Region.deviceReg()
 
-var findFastParam = FParam.timeout(200).mScore(0.85)
 var priorityRideParam = FParam.timeout(50).mScore(0.85)
-var reserveParam = FParam.timeout(500).mScore(0.85)
-var searchAreaClickParam = FParam.timeout(200).mScore(0.85)
+var postSearchRideParam = FParam.timeout(700).mScore(0.85)
+var btnReserveParam = FParam.timeout(500).mScore(0.85)
+var btnConfirmParam = FParam.timeout(500).mScore(0.85)
+var searchAreaClickParam = FParam.timeout(1200).mScore(0.85)
 var swipeSettleDelay = 200
-var apiResultDelay = 500
-var pollInterval = 75
-var searchAreaAttempts = 6
 
 fun goLeft() {
     var path = [SwipePoint(Point(750, 1000), 0, 20), SwipePoint(Point(500, 1000), 120, 20)]
@@ -20,72 +18,33 @@ fun goRight() {
     swipe(path)
 }
 
+fun completeReservation() {
+    if (!popupRegion.click("btn_reserve", btnReserveParam))
+        return false
+
+    if (!popupRegion.click("btn_reserve_confirm", btnConfirmParam))
+        return false
+
+    return true
+}
+
 fun clickSearchAreaAfterSwipe() {
-    var attempt = 0
-
-    while (attempt < searchAreaAttempts) {
-        if (searchAreaRegion.click("search_this_area", searchAreaClickParam))
-            return true
-
-        wait(pollInterval)
-        attempt = attempt + 1
-    }
-
-    return false
-}
-
-fun reserveAvailableRide() {
-    if (!popupRegion.click("new_available_rides", findFastParam))
-        return false
-
-    if (!popupRegion.click("btn_reserve", reserveParam))
-        return false
-
-    if (!popupRegion.click("btn_reserve_confirm", reserveParam))
-        return false
-
-    return true
-}
-
-fun checkAvailableRideOnce() {
-    if (!popupRegion.find("new_available_rides", findFastParam))
-        return false
-
-    return reserveAvailableRide()
-}
-
-fun revealAvailableRides() {
-    if (!popupRegion.find("available_rides", findFastParam))
-        return false
-
-    var path = [SwipePoint(Point(500, 1600), 0, 20), SwipePoint(Point(500, 1200), 120, 20)]
-    swipe(path)
-    wait(swipeSettleDelay)
-    return true
-}
-
-fun checkAvailableRideWithFallback() {
-    if (checkAvailableRideOnce())
-        return true
-
-    if (!revealAvailableRides())
-        return false
-
-    return checkAvailableRideOnce()
+    return searchAreaRegion.click("search_this_area", searchAreaClickParam)
 }
 
 fun scanAfterSwipe() {
     wait(swipeSettleDelay)
 
-    if (popupRegion.find("new_available_rides", priorityRideParam))
-        return reserveAvailableRide()
+    if (popupRegion.click("new_available_rides", priorityRideParam))
+        return completeReservation()
 
     if (!clickSearchAreaAfterSwipe())
         return false
 
-    wait(apiResultDelay)
+    if (popupRegion.click("new_available_rides", postSearchRideParam))
+        return completeReservation()
 
-    return checkAvailableRideOnce()
+    return false
 }
 
 while (true) {
@@ -95,3 +54,4 @@ while (true) {
     goLeft()
     if (scanAfterSwipe()) break
 }
+
