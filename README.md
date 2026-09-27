@@ -54,10 +54,11 @@ công cụ tự động click:
 ```text
 priorityRideParam = timeout 50 ms, match score 0.85
 postSearchRideParam = timeout 700 ms, match score 0.85
-btnReserveParam = timeout 500 ms, match score 0.85
-btnConfirmParam = timeout 500 ms, match score 0.85
+btnReserveParam = timeout 500 ms, scan rate 20, match score 0.85
+btnConfirmParam = timeout 500 ms, scan rate 20, match score 0.85
 searchAreaClickParam = timeout 1200 ms, match score 0.85
 swipeSettleDelay = 200 ms
+instantClick = waitNext 0 ms
 ```
 
 - `search_this_area` được click lại cho từng swipe; không có trạng thái nào
@@ -67,7 +68,7 @@ swipeSettleDelay = 200 ms
 - `new_available_rides` được click trực tiếp với timeout 50 ms trước Search Area; nếu có chuyến sẽ tap ngay mà không quét lặp `find()` 2 lần.
 - `search_this_area` được quét liên tục với timeout 1200 ms, loại bỏ vòng lặp thủ công và khoảng trễ chết `wait()`.
 - `postSearchRideParam` (700 ms) kết hợp cả thời gian chờ API phản hồi lẫn quét liên tục; ngay khi chuyến xuất hiện sẽ click ngay lập tức thay vì sleep mù cố định.
-- `btn_reserve` và `btn_reserve_confirm` có cấu hình timeout riêng 500 ms để tinh chỉnh độc lập.
+- `btn_reserve` và `btn_reserve_confirm` có cấu hình timeout riêng 500 ms và scan rate 20 (quét liên tục 50 ms/lần) để phản hồi ngay khi nút xuất hiện, kết hợp `instantClick` (`CParam.waitNext(0)`) loại bỏ hoàn toàn độ trễ 100 ms giữa các lần click.
 - Tất cả thao tác tìm/nhấn yêu cầu điểm tương đồng tối thiểu 0.85.
 - `search_this_area` dùng vùng riêng `Region.deviceReg().middle()`, tức khu
   vực trung tâm màn hình.

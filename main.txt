@@ -3,10 +3,11 @@ var searchAreaRegion = Region.deviceReg()
 
 var priorityRideParam = FParam.timeout(50).mScore(0.85)
 var postSearchRideParam = FParam.timeout(700).mScore(0.85)
-var btnReserveParam = FParam.timeout(500).mScore(0.85)
-var btnConfirmParam = FParam.timeout(500).mScore(0.85)
+var btnReserveParam = FParam.timeout(500).sRate(20).mScore(0.85)
+var btnConfirmParam = FParam.timeout(500).sRate(20).mScore(0.85)
 var searchAreaClickParam = FParam.timeout(1200).mScore(0.85)
 var swipeSettleDelay = 200
+var instantClick = CParam.waitNext(0)
 
 fun goLeft() {
     var path = [SwipePoint(Point(750, 1000), 0, 20), SwipePoint(Point(500, 1000), 120, 20)]
@@ -19,10 +20,10 @@ fun goRight() {
 }
 
 fun completeReservation() {
-    if (!popupRegion.click("btn_reserve", btnReserveParam))
+    if (!popupRegion.click("btn_reserve", btnReserveParam, instantClick))
         return false
 
-    if (!popupRegion.click("btn_reserve_confirm", btnConfirmParam))
+    if (!popupRegion.click("btn_reserve_confirm", btnConfirmParam, instantClick))
         return false
 
     return true

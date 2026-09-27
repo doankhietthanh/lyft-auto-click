@@ -62,7 +62,7 @@ fi
 
 passed=$((passed + 1))
 
-assert_match 'if \(!popupRegion\.click\("btn_reserve_confirm", btnConfirmParam\)\)' 'confirmation-click failure must not report success'
+assert_match 'if \(!popupRegion\.click\("btn_reserve_confirm", btnConfirmParam' 'confirmation-click failure must not report success'
 assert_match 'return completeReservation\(\)' 'a triggered reservation must conclude without falling through to search area'
 assert_not_match 'if \(completeReservation\(\)\)' 'a failed reservation must not repeat stale ride detection'
 assert_match 'wait\(swipeSettleDelay\)' 'Search Area must wait for the swipe animation to settle'
